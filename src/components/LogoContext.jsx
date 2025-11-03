@@ -1,45 +1,45 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 
-const LogoContext = createContext({ logoUrl: null, setLogoFromFile: () => Promise.resolve(), removeLogo: () => {} });
+const LogoContext = createContext({
+  logoUrl: null,
+  setLogoFromFile: async () => {},
+  removeLogo: () => {},
+});
 
 export function LogoProvider({ children }) {
-  const [logoUrl, setLogoUrl] = useState(null);
-  const hasHydrated = useRef(false);
-
-  // Hydrate from localStorage once on mount
-  useEffect(() => {
+  // Lazy initializer prevents flash by reading once before first paint
+  const [logoUrl, setLogoUrl] = useState(() => {
     try {
-      const saved = localStorage.getItem('bkaap_logo');
-      if (saved) setLogoUrl(saved);
-    } catch {}
-    hasHydrated.current = true;
-  }, []);
+      return localStorage.getItem('bkaap_logo');
+    } catch {
+      return null;
+    }
+  });
 
-  // Persist when value changes (skip first render before hydration)
-  useEffect(() => {
-    if (!hasHydrated.current) return;
-    try {
-      if (logoUrl) localStorage.setItem('bkaap_logo', logoUrl);
-      else localStorage.removeItem('bkaap_logo');
-    } catch {}
-  }, [logoUrl]);
-
-  const setLogoFromFile = (file) =>
-    new Promise((resolve, reject) => {
-      if (!file) return resolve(null);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        setLogoUrl(dataUrl);
-        resolve(dataUrl);
-      };
+  const setLogoFromFile = useCallback(async (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    const dataUrl = await new Promise((resolve, reject) => {
+      reader.onload = () => resolve(reader.result);
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+    try {
+      localStorage.setItem('bkaap_logo', dataUrl);
+    } catch (e) {
+      console.warn('Falha ao salvar a logo no navegador:', e);
+    }
+    setLogoUrl(dataUrl);
+  }, []);
 
-  const removeLogo = () => setLogoUrl(null);
+  const removeLogo = useCallback(() => {
+    try {
+      localStorage.removeItem('bkaap_logo');
+    } catch {}
+    setLogoUrl(null);
+  }, []);
 
-  const value = useMemo(() => ({ logoUrl, setLogoFromFile, removeLogo }), [logoUrl]);
+  const value = useMemo(() => ({ logoUrl, setLogoFromFile, removeLogo }), [logoUrl, setLogoFromFile, removeLogo]);
 
   return <LogoContext.Provider value={value}>{children}</LogoContext.Provider>;
 }

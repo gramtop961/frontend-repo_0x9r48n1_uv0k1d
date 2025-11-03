@@ -1,29 +1,54 @@
-import { useEffect, useState } from 'react';
-import { Menu, X, Home, Info, FileText, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, X, Settings } from 'lucide-react';
+import { useLogo } from './LogoContext';
 
-export default function Navbar({ logoUrl }) {
+export default function Navbar() {
+  const { logoUrl } = useLogo();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const NavLink = ({ href, label, Icon }) => (
-    <a
-      href={href}
-      onClick={() => setOpen(false)}
-      className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-gray-100 hover:text-white hover:bg-white/10 transition"
-    >
-      {Icon ? <Icon size={16} /> : null}
-      {label}
-    </a>
+  const NavLinks = () => (
+    <ul className="flex flex-col md:flex-row md:items-center gap-6">
+      <li><a href="#inicio" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Início</a></li>
+      <li><a href="#sobre" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Sobre</a></li>
+      <li><a href="#orcamento" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Orçamento</a></li>
+      <li>
+        <a href="#admin" className="inline-flex items-center gap-2 text-[#2ECC71] font-medium">
+          <Settings size={18} /> Admin
+        </a>
+      </li>
+    </ul>
   );
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-colors ${scrolled ? 'bg-[#1F1F1F]/95 shadow-lg' : 'bg-[#1F1F1F]/70'} backdrop-blur`}>\n      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">\n        <div className="flex h-16 items-center justify-between">\n          <a href="#inicio" className="flex items-center gap-3">\n            <div className="w-9 h-9 rounded overflow-hidden bg-[#2ECC71]/10 ring-1 ring-[#2ECC71]/30 flex items-center justify-center text-white font-bold">\n              {logoUrl ? (\n                <img src={logoUrl} alt="Logo BKAAP" className="w-full h-full object-contain" />\n              ) : (\n                <span className="text-[#2ECC71]">BK</span>\n              )}\n            </div>\n            <div className="text-white">\n              <p className="text-sm leading-tight uppercase tracking-widest text-[#2ECC71]">BKAAP</p>\n              <p className="text-xs -mt-1 text-gray-300">Engenharia & Construção</p>\n            </div>\n          </a>\n\n          <nav className="hidden md:flex items-center gap-2">\n            <NavLink href="#inicio" label="Início" Icon={Home} />\n            <NavLink href="#sobre" label="Sobre" Icon={Info} />\n            <NavLink href="#orcamento" label="Orçamento" Icon={FileText} />\n            <a href="#admin" className="ml-2 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#2ECC71] hover:brightness-110 text-[#1F1F1F] text-sm font-semibold transition">\n              <Settings size={16} /> Área Administrativa\n            </a>\n          </nav>\n\n          <button\n            className="md:hidden text-white p-2 rounded hover:bg-white/10"\n            onClick={() => setOpen((v) => !v)}\n            aria-label="Abrir menu"
-          >\n            {open ? <X /> : <Menu />}\n          </button>\n        </div>\n      </div>\n\n      {open ? (\n        <div className="md:hidden border-t border-white/10 bg-[#1F1F1F]/95">\n          <div className="px-4 py-3 grid gap-1">\n            <NavLink href="#inicio" label="Início" Icon={Home} />\n            <NavLink href="#sobre" label="Sobre" Icon={Info} />\n            <NavLink href="#orcamento" label="Orçamento" Icon={FileText} />\n            <a href="#admin" className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2ECC71] hover:brightness-110 text-[#1F1F1F] text-sm font-semibold transition">\n              <Settings size={16} /> Área Administrativa\n            </a>\n          </div>\n        </div>\n      ) : null}\n    </header>
+    <header className="fixed top-0 inset-x-0 z-50 bg-[#1F1F1F]/80 backdrop-blur-md border-b border-[#2e2e2e]">
+      <nav className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <a href="#inicio" className="flex items-center gap-3">
+          {logoUrl ? (
+            <img src={logoUrl} alt="BKAAP" className="h-9 w-9 object-contain rounded" />
+          ) : (
+            <div className="h-9 w-9 rounded bg-[#2ECC71] grid place-items-center text-black font-bold">B</div>
+          )}
+          <span className="text-white font-semibold tracking-wide">BKAAP</span>
+        </a>
+
+        <div className="hidden md:block">
+          <NavLinks />
+        </div>
+
+        <button
+          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white hover:text-[#2ECC71] focus:outline-none"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Abrir menu"
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </nav>
+
+      {open && (
+        <div className="md:hidden px-4 pb-6">
+          <NavLinks />
+        </div>
+      )}
+    </header>
   );
 }
