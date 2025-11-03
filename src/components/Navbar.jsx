@@ -22,13 +22,20 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-[#1F1F1F]/80 backdrop-blur-md border-b border-[#2e2e2e]">
       <nav className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-3">
-          {logoUrl ? (
-            <img src={logoUrl} alt="BKAAP" className="h-9 w-9 object-contain rounded" />
-          ) : (
-            <div className="h-9 w-9 rounded bg-[#2ECC71] grid place-items-center text-black font-bold">B</div>
-          )}
-          <span className="text-white font-semibold tracking-wide">BKAAP</span>
+        <a href="#inicio" className="flex items-center gap-3" aria-label="Ir para o início">
+          <div className="flex items-center">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="h-9 md:h-10 lg:h-11 w-auto object-contain rounded-md bg-[#0F0F0F] p-1.5 ring-1 ring-white/10 shadow-sm"
+              />
+            ) : (
+              <div className="h-9 md:h-10 lg:h-11 w-9 md:w-10 lg:w-11 rounded-md bg-[#0F0F0F] grid place-items-center ring-1 ring-white/10 shadow-sm">
+                <span className="text-[#2ECC71] font-bold">B</span>
+              </div>
+            )}
+          </div>
         </a>
 
         <div className="hidden md:block">
