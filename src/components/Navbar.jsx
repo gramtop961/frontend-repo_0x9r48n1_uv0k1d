@@ -1,61 +1,35 @@
-import React, { useState } from 'react';
-import { Menu, X, Settings } from 'lucide-react';
+import React from 'react';
 import { useLogo } from './LogoContext';
 
-export default function Navbar() {
-  const { logoUrl } = useLogo();
-  const [open, setOpen] = useState(false);
-
-  const NavLinks = () => (
-    <ul className="flex flex-col md:flex-row md:items-center gap-6">
-      <li><a href="#inicio" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Início</a></li>
-      <li><a href="#sobre" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Sobre</a></li>
-      <li><a href="#orcamento" className="text-[#EAEAEA] hover:text-[#2ECC71] transition-colors">Orçamento</a></li>
-      <li>
-        <a href="#admin" className="inline-flex items-center gap-2 text-[#2ECC71] font-medium">
-          <Settings size={18} /> Admin
-        </a>
-      </li>
-    </ul>
-  );
+const Navbar = () => {
+  const { logo, hydrated } = useLogo();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-[#1F1F1F]/80 backdrop-blur-md border-b border-[#2e2e2e]">
-      <nav className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-3" aria-label="Ir para o início">
-          <div className="flex items-center">
-            {logoUrl ? (
+    <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[#0F0F0F]/60 bg-[#0F0F0F]/80 border-b border-white/5">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex items-center justify-center rounded-md bg-[#121212] ring-1 ring-white/10 shadow-sm px-2.5 py-1.5">
+            {hydrated && logo ? (
               <img
-                src={logoUrl}
+                src={logo}
                 alt="Logo"
-                className="h-9 md:h-10 lg:h-11 w-auto object-contain rounded-md bg-[#0F0F0F] p-1.5 ring-1 ring-white/10 shadow-sm"
+                className="h-9 sm:h-10 md:h-11 w-auto object-contain select-none"
+                draggable={false}
               />
             ) : (
-              <div className="h-9 md:h-10 lg:h-11 w-9 md:w-10 lg:w-11 rounded-md bg-[#0F0F0F] grid place-items-center ring-1 ring-white/10 shadow-sm">
-                <span className="text-[#2ECC71] font-bold">B</span>
-              </div>
+              <div className="h-9 sm:h-10 md:h-11 aspect-[5/2] bg-[#1F1F1F] rounded-sm" />
             )}
           </div>
-        </a>
-
-        <div className="hidden md:block">
-          <NavLinks />
         </div>
 
-        <button
-          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-white hover:text-[#2ECC71] focus:outline-none"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Abrir menu"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </nav>
-
-      {open && (
-        <div className="md:hidden px-4 pb-6">
-          <NavLinks />
-        </div>
-      )}
+        <nav className="hidden sm:flex items-center gap-6 text-sm text-neutral-300">
+          <a href="#portfolio" className="hover:text-white transition-colors">Portfólio</a>
+          <a href="#orcamento" className="hover:text-white transition-colors">Orçamento</a>
+          <a href="#contato" className="hover:text-white transition-colors">Contato</a>
+        </nav>
+      </div>
     </header>
   );
-}
+};
+
+export default Navbar;

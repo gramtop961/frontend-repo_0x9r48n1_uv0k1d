@@ -1,49 +1,57 @@
-import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 
 const LogoContext = createContext({
-  logoUrl: null,
+  logo: null,
   setLogoFromFile: async () => {},
   removeLogo: () => {},
+  hydrated: false,
 });
 
-export function LogoProvider({ children }) {
-  // Lazy initializer prevents flash by reading once before first paint
-  const [logoUrl, setLogoUrl] = useState(() => {
+export const LogoProvider = ({ children }) => {
+  const [logo, setLogo] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
     try {
-      return localStorage.getItem('bkaap_logo');
-    } catch {
-      return null;
+      const stored = localStorage.getItem('app:brandLogo');
+      if (stored) setLogo(stored);
+    } catch (e) {
+      // ignore
+    } finally {
+      setHydrated(true);
     }
-  });
+  }, []);
 
   const setLogoFromFile = useCallback(async (file) => {
     if (!file) return;
     const reader = new FileReader();
-    const dataUrl = await new Promise((resolve, reject) => {
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        try {
+          localStorage.setItem('app:brandLogo', dataUrl);
+        } catch (e) {
+          // ignore quota errors
+        }
+        setLogo(dataUrl);
+        resolve(dataUrl);
+      };
       reader.readAsDataURL(file);
     });
-    try {
-      localStorage.setItem('bkaap_logo', dataUrl);
-    } catch (e) {
-      console.warn('Falha ao salvar a logo no navegador:', e);
-    }
-    setLogoUrl(dataUrl);
   }, []);
 
   const removeLogo = useCallback(() => {
-    try {
-      localStorage.removeItem('bkaap_logo');
-    } catch {}
-    setLogoUrl(null);
+    try { localStorage.removeItem('app:brandLogo'); } catch (e) {}
+    setLogo(null);
   }, []);
 
-  const value = useMemo(() => ({ logoUrl, setLogoFromFile, removeLogo }), [logoUrl, setLogoFromFile, removeLogo]);
+  const value = useMemo(() => ({ logo, setLogoFromFile, removeLogo, hydrated }), [logo, setLogoFromFile, removeLogo, hydrated]);
 
-  return <LogoContext.Provider value={value}>{children}</LogoContext.Provider>;
-}
+  return (
+    <LogoContext.Provider value={value}>
+      {children}
+    </LogoContext.Provider>
+  );
+};
 
-export function useLogo() {
-  return useContext(LogoContext);
-}
+export const useLogo = () => useContext(LogoContext);
