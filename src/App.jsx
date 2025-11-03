@@ -2,6 +2,8 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Portfolio from './components/Portfolio';
+import AdminSettings from './components/AdminSettings';
+import { LogoProvider, useLogo } from './components/LogoContext';
 
 function OrcamentoCTA() {
   return (
@@ -26,21 +28,29 @@ function OrcamentoCTA() {
   );
 }
 
-export default function App() {
+function Shell() {
+  const { logoUrl } = useLogo();
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar logoUrl={logoUrl} />
       <main>
         <Hero />
         <About />
         <Portfolio />
         <OrcamentoCTA />
+        <AdminSettings />
       </main>
       <footer className="bg-gray-950 text-gray-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold">BK</div>
+              <div className="w-10 h-10 rounded overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo BKAAP" className="w-full h-full object-contain" />
+                ) : (
+                  'BK'
+                )}
+              </div>
               <div className="text-white">
                 <p className="text-sm leading-tight uppercase tracking-widest text-emerald-300">BKAAP</p>
                 <p className="text-xs -mt-1 text-gray-300">Engenharia & Construção</p>
@@ -69,5 +79,13 @@ export default function App() {
         <div className="border-t border-white/10 py-4 text-center text-xs text-gray-500">© {new Date().getFullYear()} BKAAP. Todos os direitos reservados.</div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LogoProvider>
+      <Shell />
+    </LogoProvider>
   );
 }
