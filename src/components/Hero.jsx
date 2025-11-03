@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[80vh] sm:min-h-[90vh] w-full bg-[#1F1F1F] overflow-hidden">
+    <section className="relative min-h-[80vh] sm:min-h-[90vh] w-full overflow-hidden">
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/VJLoxp84lCdVfdZu/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        <Spline scene="https://prod.spline.design/yji5KWXyD-xKVkWj/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#0B0B0B]/70 via-[#0B0B0B]/60 to-[#0B0B0B]" />
 
